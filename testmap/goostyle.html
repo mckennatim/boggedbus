@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Data Layer: Event Handling</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    #info-box {
+      background-color: white;
+      border: 1px solid black;
+      bottom: 30px;
+      height: 20px;
+      padding: 10px;
+      position: absolute;
+      left: 30px;
+    }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <script>
+var map;
+function initialize() {
+  map = new google.maps.Map(document.getElementById('map-canvas'), {
+    zoom: 4,
+    center: {lat: -28, lng: 137.883}
+  });
+
+  // Load GeoJSON.
+  map.data.loadGeoJson('https://storage.googleapis.com/maps-devrel/google.json');
+
+  // Add some style.
+  map.data.setStyle(function(feature) {
+    console.log(feature.getProperty('color'))
+    return /** @type {google.maps.Data.StyleOptions} */({
+      fillColor: feature.getProperty('color'),
+      strokeWeight: 1
+    });
+  });
+
+  // [START snippet]
+  // Set mouseover event for each feature.
+  map.data.addListener('mouseover', function(event) {
+    document.getElementById('info-box').textContent =
+        event.feature.getProperty('letter');
+  });
+  // [END snippet]
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+    <div id="info-box">?</div>
+  </body>
+</html>
