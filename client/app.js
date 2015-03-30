@@ -119,9 +119,23 @@ app.directive('busInfo',function(DataService){
 			})
 			scope.getMap= function(route){
 				console.log(route)
-				DataService.getGeo(route).then(function(data){
+
+				// DataService.predictionsByRoute(route).then(function(data){
+				// 	console.log(data)
+				// })				
+			}
+			scope.sdates =DataService.sdates;
+			scope.sdate = scope.sdates[0];
+			scope.times =DataService.times;
+			scope.time = scope.times[0]
+			scope.mapIt =function(){
+				var params =scope.route;
+				params.sdate =scope.sdate ;
+				params.stime = scope.time;
+				console.log(params);
+				DataService.getGeo(params).then(function(data){
 					initMap(data[0].georecs);
-				})
+				})				
 			}
 		}
 	}
@@ -141,6 +155,22 @@ app.factory('DataService', ['$http', '$q',  'cfg',  function($http, $q, cfg) {
 	console.log(cfg.setup().url)
 	var httpLoc= cfg.setup().url;
 	var routes;
+	var sdates =  ['2015-02-23','2015-02-24','2015-02-25','2015-02-26','2015-02-27','2015-02-28','2015-03-01'];
+	console.log(sdates[0])
+	var makeTimeArr = function(){
+		var arr =['05:30:00'];
+		var sd =330; //05:30:00
+		for (var i=1; i <37;i++){
+			sd +=30;
+			var hr = Math.floor(sd/60);
+			var min =Math.floor(sd - hr*60)
+			if(hr<10){hr="0"+hr}
+			if(min<10){min="0"+min}
+			arr[i] =hr+':'+min+':00'
+		}
+		return arr;
+	}
+	var times = makeTimeArr();
 	return {
 		remoteRoutes: function() {
 			var url=httpLoc + 'routes/';
@@ -168,6 +198,8 @@ app.factory('DataService', ['$http', '$q',  'cfg',  function($http, $q, cfg) {
 			return deferred.promise;
 		},
 		routes: routes,
+		sdates:sdates,
+		times:times,
 		setRoutes: function(r){
 			routes = r;
 		},
@@ -176,36 +208,60 @@ app.factory('DataService', ['$http', '$q',  'cfg',  function($http, $q, cfg) {
 		},
 		getGeo:function(br){
 			var route = br.route;
-			var dir = br.dir
-			var url=httpLoc + 'geo/'+route+'/'+dir;
+			var dir = br.dir;
+			var sdate = br.sdate;
+			var stime = br.stime;
+			var url=httpLoc + 'geo/'+route+'/'+dir+'/'+sdate+'/'+stime;
 			console.log(url)
 			var deferred = $q.defer();
 			$http.get(url).   
-				success(function(data, status) {
+			success(function(data, status) {
 				console.log(data[0].georecs);
 				//console.log(status);
 				routes = data;
 				deferred.resolve(data);
 			}).
-				error(function(data, status){
-					console.log(data || "Request failed");
-					console.log(status);
-					if (status==0){
-						deferred.reject({message: 'server is down'})
-					} else if(status==401){
-						deferred.reject({message: 'Authorization failed, try re-entering apikey'})               
-					} else if(status==404){
-						deferred.reject({message: '404, try re-entering apikey'})
-					}else{
-						deferred.reject({message: 'no clue on what is wrong'})
-					}
-				});
+			error(function(data, status){
+				console.log(data || "Request failed");
+				console.log(status);
+				if (status==0){
+					deferred.reject({message: 'server is down'})
+				} else if(status==401){
+					deferred.reject({message: 'Authorization failed, try re-entering apikey'})               
+				} else if(status==404){
+					deferred.reject({message: '404, try re-entering apikey'})
+				}else{
+					deferred.reject({message: 'no clue on what is wrong'})
+				}
+			});
 			return deferred.promise;			
 		},
 		predictionsByRoute: function(br){
 			var route = br.route;
 			var dir = br.dir
+			var deferred = $q.defer();
 			var purl ='http://realtime.mbta.com/developer/api/v2/predictionsbyroute?api_key=wX9NwuHnZU2ToO7GmGR9uw&route='+route+'&format=json'
+			$http.get(purl).   
+			success(function(data, status) {
+				//console.log(data);
+				//console.log(status);
+				routes = data;
+				deferred.resolve(data);
+			}).
+			error(function(data, status){
+				console.log(data || "Request failed");
+				console.log(status);
+				if (status==0){
+					deferred.reject({message: 'server is down'})
+				} else if(status==401){
+					deferred.reject({message: 'Authorization failed, try re-entering apikey'})               
+				} else if(status==404){
+					deferred.reject({message: '404, try re-entering apikey'})
+				}else{
+					deferred.reject({message: 'no clue on what is wrong'})
+				}
+			});
+			return deferred.promise;
 		}
 	}
 }])

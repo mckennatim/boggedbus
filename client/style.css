@@ -187,6 +187,18 @@ body {
     background-color: #FFF
 }
 
+#info-container{
+    padding: 80px;  
+    margin: 80px;
+    border: 90px;
+}
+
+#rt-dd{
+     padding: 10px;  
+    margin: 10px;
+    border: 10px; 
+}
+
 #map-container {
     height: 530px
 }

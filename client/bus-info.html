@@ -1,26 +1,33 @@
-  <div class="row container">
-  <form class="form-horizontal container" name="commentform">
+  <div class="row container info-container">
+  <form class="form-horizontal container " name="commentform">
     <div class="form-group container">
-        <div class="col-md-2">
-            <button ng-click=getRoutes()>Get Routes</button><br>
+        <div class="col-md-5">
+            <big>Find bogged-down sections of route: </big>
         </div>
         <div class="col-md-7">
-            <select ng-model="route" ng-options="'rt:'+route.route +'-'+ route.dir +': ' +route.headsign  for route in routes" ng-change="getMap(route)"></select><br>
-        </div>
-        <div class="col-md-3 input-group">
-        <span class="input-group-addon">@</span>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email Address"/>
+            <select ng-model="route" ng-options="'rt:'+route.route +'-'+ route.dir +': ' +route.headsign  for route in routes" ng-change="getMap(route)">
+                <option value="" selected>-select bus route to map-</option>
+            </select><br>
         </div>
     </div>
     <div class="form-group container">
-        <div class="col-md-12">
-            <textarea rows="6" class="form-control" id="comments" name="comments" placeholder="Your question or comment here"></textarea>
+        <div class="col-md-1">
+            <big>on:</big>
         </div>
-    </div>
-    <div class="form-group container" >
-        <div class="col-md-6">
-            <button type="submit" value="Submit" class="btn btn-warning pull-right">Send</button>
+        <div class="col-md-3">
+                <select  ng-model="sdate"  ng-options="sdate for sdate in sdates" >
+                </select><br>
         </div>
+        <div class="col-md-1">
+            <big>@</big>
+        </div>
+        <div class="col-md-4">
+                <select  ng-model="time"  ng-options="time for time in times" >
+                </select><br>
+        </div>      
+        <div class="col-md-3">
+            <button type="submit"class="btn" ng-click="mapIt()">map it !</button>
+        </div>                     
     </div>
 </form>
 </div><!-- /row -->

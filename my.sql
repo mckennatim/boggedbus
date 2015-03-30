@@ -470,3 +470,52 @@ FROM
   public.bus_shapes) as boo;
 
   mbta=# select row_to_json(bus) from bus \g |cat >> bus.json
+
+
+  SELECT 
+  timepointcro.servicedate, 
+  timepointcro.tripid, 
+  timepointcro.route, 
+  timepointcro.direction, 
+  timepointcro.stop,  
+  timepointcro.tpo, 
+  timepointcro.scheduled
+INTO tpo_lookup
+FROM 
+  public.timepointcro 
+WHERE
+  pointtype= 'Startpoint'
+ORDER BY
+ tpo, route, direction, tripid;  
+
+--1/2 hour for all busses on a route in a day
+SELECT 
+  servicedate, 
+  tripid, 
+  route, 
+  direction, 
+  stop,  
+  tpo, 
+  scheduled
+FROM 
+  timepointcro 
+WHERE
+  route = '39' AND
+  direction = 'Inbound' AND
+  servicedate='2015-2-23' AND
+  scheduled >= '1900-01-01 08:30:00.000' AND
+  scheduled < '1900-01-01 09:00:00.000' 
+ORDER BY
+ route, direction, tripid, tpo
+LIMIT 100;
+
+SELECT servicedate, tripid, route, direction, stop,  tpo, scheduled FROM timepointcro WHERE route = '39' AND direction = 'Inbound' AND servicedate='2015-2-23' AND scheduled >= '1900-01-01 08:30:00.000' AND scheduled < '1900-01-01 09:00:00.000'  ORDER BY route, direction, tripid, tpo;
+  
+SELECT DISTINCT
+  servicedate
+INTO servicedates  
+FROM 
+  timepointcro 
+ORDER BY
+ servicedate
+LIMIT 100;
