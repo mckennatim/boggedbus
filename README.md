@@ -10,7 +10,7 @@ Select
 * select bus route
 * choose date
 * select time slot
-then press MapIt
+* then press MapIt
 
 ### Purpose
 Mayor Walsh and his staff seem intersted in monitoring the state of the city. By knowing how well the buses are moving you get a better sense of how well the city is working. 
