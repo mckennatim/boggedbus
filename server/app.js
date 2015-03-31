@@ -2,6 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var http =require('http');
 var pg = require('pg');
+var geoobjNew ={}; //what thise whole app creates
 
 var conString = "postgres://postgres:jjjjjj@localhost/mbta";
 var client = new pg.Client(conString);
@@ -85,10 +86,19 @@ app.get('/geo/:route/:dir/:sdate/:stime', function (req, res) {
 		geo_route.find({route:req.params.route, dir:req.params.dir}).limit(1).exec(function (err, docs) {
 			//console.log(docs)
 			geoobj=docs[0].georecs.features;
-			console.log(geoobj[0].properties)
-			res.json(docs);
+			//console.log(geoobj[0].properties)
+			//res.json(docs);
 			//insertPbr(req.params.route);
-			getTpc(req.params.route);
+			getTpc(req.params.route, function(tpc){
+				var starr = extractTimes(tpc);
+				consolSta(starr, function(stav){
+					var newgeo = processGeo(stav);
+					docs[0].georecs.features = newgeo;
+					console.log(docs[0].georecs.features)
+					res.json(docs)
+				})
+			})
+			//console.log(rt)
 		});
 	}
 });
@@ -133,19 +143,26 @@ var insertPbr = function(route){
 	});	
 }
 
-var getTpc = function(route){
+var getTpc = function(route, cb){
 	var client = new pg.Client(conString);
 	var body = [];
 	client.connect();
 	//var query = client.query("SELECT * FROM timepointcro LIMIT 10");
-	var query = client.query("SELECT servicedate, tripid, route, direction, stop,  tpo, scheduled, arrival, departure FROM timepointcro WHERE route = '39' AND direction = 'Inbound' AND servicedate='2015-2-23' AND scheduled >= '1900-01-01 08:30:00.000' AND scheduled < '1900-01-01 09:00:00.000'  ORDER BY route, direction, tripid, tpo");
+	var query = client.query({text: "SELECT servicedate, tripid, route, direction, stop,  tpo, scheduled, arrival, departure FROM timepointcro WHERE route = $1 AND direction = 'Inbound' AND servicedate='2015-2-23' AND scheduled >= '1900-01-01 08:30:00.000' AND scheduled < '1900-01-01 09:00:00.000'  ORDER BY route, direction, tripid, tpo", values:[ route ]});
 	query.on('row', function(row) {
 		body.push(row)
 	});
 	query.on('end', function(){
 		client.end.bind(client);
-		extractTimes(body)
+		// var starr = extractTimes(body)
+		// console.log(starr)
+		// consolSta(starr, function(data){
+		// 	console.log(data)
+		// })
+		cb(body)
 	});
+
+	return 'back from getTpc'
 }
 
 var extractTimes= function(t){
@@ -176,21 +193,25 @@ var extractTimes= function(t){
 		}
 		if (t[i]){cur = t[i].tripid}
 	}
-	pgSave(reca);
+	//pgSave(reca);
+	///console.log(geoobj)
+	//console.log(reca)
+	return reca
 
 }
- var pgSave = function(reca){
+ var consolSta = function(reca, cb){
  	//console.log(reca)
+ 	var geo_pgs_str
  	console.log(reca.length)
  	var durs = [];
  	var client = new pg.Client(conString);
  	client.connect();
  	client.on('drain', client.end.bind(client));
 	client.query("DROP TABLE reca", function(err, result){
-		console.log(err)
+		//console.log(err)
 	});
 	client.query("CREATE  TABLE reca (frstop varchar(20), tostop varchar(20), dur integer)", function(err, result){
-		console.log(err)
+		//console.log(err)
 		console.log('created')
 	});
 	for (var i=0;i<reca.length; i++){
@@ -199,17 +220,55 @@ var extractTimes= function(t){
 
 	}
 	var sq =client.query("SELECT frstop,tostop, avg(dur)::integer FROM reca WHERE dur>0 GROUP BY frstop, tostop", function(err, result){
-		console.log(err)
+		//console.log(err)
 	});
 	sq.on('row', function(row) {
 		durs.push(row)
 	});		
 	sq.on('end', function(){
-		console.log(durs)
-		processGeo(durs);
-	});	
- }
+		//console.log(durs)
+		//processGeo(durs);
+		//console.log(geo_pgs_str)
 
+		cb(durs);
+
+	});
+ }
 var processGeo = function(d){
-	console.log(geoobj[0].properties)
+	//console.log(d)
+	//sum distances then do it a gain for speed
+	for (var i = 0; i<d.length;i++){
+		var j=0
+		//console.log(d[i])
+		while (j< geoobj.length){
+			//console.log(d[i].frstop+' == '+geoobj[j].properties.stop_id)
+			if (d[i] && (d[i].frstop == geoobj[j].properties.stop_id)){
+				geoobj[j].properties.time = d[i].avg;
+				//console.log('stop id was equal')
+				var firstj =j;
+				//console.log(firstj)
+				var cumdist  = geoobj[j].properties.distance;
+				do{
+					j++;
+					geoobj[j].properties.time = d[i].avg;
+					cumdist += geoobj[j].properties.distance;
+				}while (geoobj[j].properties.stop_id != d[i].tostop);
+				//console.log(cumdist)
+				lastj =j
+				//console.log(lastj)
+				for (var m = firstj; m<=lastj; m++){
+					geoobj[m].properties.cumdist = cumdist;
+					geoobj[m].properties.speed = Math.round(cumdist / d[i].avg * 2.23694);
+				};
+				j=lastj;
+			}
+			j++;
+		}
+	}	
+//console.log(geoobj)
+//var geoStr = JSON.stringify(geoobj);
+//console.log(geoStr)
+
+return geoobj;
+//geoobjNew = JSON.parse(geoStr);
 }
