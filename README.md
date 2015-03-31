@@ -6,9 +6,10 @@ A graphical analytic tool for finding how fast the buses ar moving over differen
 ### Usage
 
 Select 
-* bus route
-* date
-* time slot
+* goto <http://boggedbuses.sitebuilt.net/boggedbus/client/index.html>
+* select bus route
+* choose date
+* select time slot
 then press MapIt
 
 ### Purpose
