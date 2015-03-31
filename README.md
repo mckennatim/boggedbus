@@ -33,7 +33,7 @@ The application is then driven by the timePointCrossing data. This collection of
 Rigth now something is wrong with the speed feature display for the inbound routes. So they won't show up until it is taken care of.
 
 ### Ways to extend this project
-Besides being able to analyze prior days and times, it would be useful to feed in the realime stream from the MBTA. The JSON produced from url queries like <realtime.mbta.com/developer/api/v2/predictionsbyroute?api_key=wX9NwuHnZU2ToO7GmGR9uw&route=39&format=json> is very similar to the hubhacks2 tmePointCrossing data; it has finer resolution with time data on every stop, not just 10 per route, but it often comes up empty when queried on some routes.
+Besides being able to analyze prior days and times, it would be useful to feed in the realime stream from the MBTA. The JSON produced from url queries like <realtime.mbta.com/developer/api/v2/predictionsbyroute?api_key=wX9NwuHnZU2ToO7GmGR9uw&route=39&format=json> is very similar to the hubhacks2 tmePointCrossing data; it has finer resolution with time data on every stop, not just 10 per route, but, it often comes up empty when queried on some routes.
 
 ### Installation
 
