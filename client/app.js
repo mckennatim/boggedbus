@@ -59,32 +59,68 @@ app.directive('busInfo',function(DataService){
 					center: new google.maps.LatLng(0, 0),
 					zoom: 2
 				});
-				console.log(geojson)
+				//console.log(geojson)
 				//console.log(geojson.features[0].geometry.type)
 				map.data.addGeoJson(geojson);
 				map.data.setStyle(function(feature){
 					//console.log(feature.getProperty('distance'))
-					if(feature.getProperty('distance')<500){
-						return mystyle;
+					var speed =feature.getProperty('speed')
+					console.log(speed)
+					//console.log(feature.getProperty('time'))
+					if(speed>20){
+						return spstyle.green;
+					}else if(speed>16){
+						return spstyle.blue;
+					}else if(speed>12){
+						return spstyle.yellow;
+					}else if(speed>8){
+						return spstyle.purple;
+					}else if(speed>0){
+						return spstyle.red;
 					}else{
-						return mystyle2;
+						return spstyle.black
 					}
 				});
 				zoom(map);
 			}
 
-			var mystyle2 = {
-					"color":"blue",
-					"strokeColor": "blue",
-					"stroke-width":"3",
-					"fill-opacity":0.6     	
-			}
-
-			var mystyle = {
+			var spstyle = {
+				red: {
 					"color":"red",
 					"strokeColor": "red",
 					"stroke-width":"3",
-					"fill-opacity":0.6     	
+					"fill-opacity":0.6 
+				},
+				purple: {
+					"color":"purple",
+					"strokeColor": "purple",
+					"stroke-width":"3",
+					"fill-opacity":0.6 
+				},
+				yellow: {
+					"color":"yellow",
+					"strokeColor": "yellow",
+					"stroke-width":"3",
+					"fill-opacity":0.6 
+				},
+				blue: {
+					"color":"blue",
+					"strokeColor": "blue",
+					"stroke-width":"3",
+					"fill-opacity":0.6 
+				},
+				green: {
+					"color":"green",
+					"strokeColor": "green",
+					"stroke-width":"3",
+					"fill-opacity":0.6 
+				},
+				black: {
+					"color":"black",
+					"strokeColor": "black",
+					"stroke-width":"3",
+					"fill-opacity":0.6 
+				}
 			}
 
 			function zoom(map) {
@@ -132,7 +168,7 @@ app.directive('busInfo',function(DataService){
 				var params =scope.route;
 				params.sdate =scope.sdate ;
 				params.stime = scope.time;
-				console.log(params);
+				//console.log(params);
 				DataService.getGeo(params).then(function(data){
 					initMap(data[0].georecs);
 				})				
@@ -212,11 +248,11 @@ app.factory('DataService', ['$http', '$q',  'cfg',  function($http, $q, cfg) {
 			var sdate = br.sdate;
 			var stime = br.stime;
 			var url=httpLoc + 'geo/'+route+'/'+dir+'/'+sdate+'/'+stime;
-			console.log(url)
+			//console.log(url)
 			var deferred = $q.defer();
 			$http.get(url).   
 			success(function(data, status) {
-				console.log(data[0].georecs);
+				//console.log(data[0].georecs);
 				//console.log(status);
 				routes = data;
 				deferred.resolve(data);

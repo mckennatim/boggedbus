@@ -509,6 +509,27 @@ ORDER BY
  route, direction, tripid, tpo
 LIMIT 100;
 
+SELECT 
+  servicedate, 
+  tripid, 
+  route, 
+  direction, 
+  stop,  
+  tpo, 
+  scheduled
+FROM 
+  timepointcro 
+WHERE
+  route = '39' AND
+  direction = 'Inbound' AND
+  servicedate='2015-2-23' AND
+  scheduled >= '1900-01-01 08:30:00.000' AND
+  scheduled < 'Mon Jan 01 1900 09:00:00 GMT-0500 (Eastern Standard Time)' 
+ORDER BY
+ route, direction, tripid, tpo
+LIMIT 100;
+Mon Jan 01 1900 09:00:00 GMT-0500 (Eastern Standard Time)
+
 SELECT servicedate, tripid, route, direction, stop,  tpo, scheduled FROM timepointcro WHERE route = '39' AND direction = 'Inbound' AND servicedate='2015-2-23' AND scheduled >= '1900-01-01 08:30:00.000' AND scheduled < '1900-01-01 09:00:00.000'  ORDER BY route, direction, tripid, tpo;
   
 SELECT DISTINCT
@@ -518,4 +539,67 @@ FROM
   timepointcro 
 ORDER BY
  servicedate
+LIMIT 100;
+
+SELECT 
+  servicedate, 
+  tripid, 
+  route, 
+  direction, 
+  stop,  
+  tpo, 
+CASE  
+WHEN departure='NULL' AND arrival='NULL' THEN scheduled
+WHEN departure='NULL' THEN arrival
+ELSE scheduled
+END as arrdep,
+  scheduled,
+  arrival,
+  departure
+FROM 
+  timepointcro 
+WHERE
+  route = '39' AND
+  direction = 'Inbound' AND
+  servicedate='2015-2-23' AND
+CASE WHEN departure='NULL' AND arrival='NULL' THEN scheduled
+WHEN departure='NULL' THEN arrival
+ELSE scheduled
+END >= '1900-01-01 08:30:00.000' AND
+CASE WHEN departure='NULL' AND arrival='NULL' THEN scheduled
+WHEN departure='NULL' THEN arrival
+ELSE scheduled
+END  < '1900-01-01 09:00:00.000' 
+ORDER BY
+ route, direction, tripid, tpo
+LIMIT 100;
+
+SELECT 
+  servicedate, 
+  tripid, 
+  route, 
+  direction, 
+  stop,  
+  tpo, 
+CASE  
+WHEN departure='NULL' AND arrival='NULL' THEN scheduled
+WHEN departure='NULL' THEN arrival
+ELSE scheduled
+END as arrdep
+FROM 
+  timepointcro 
+WHERE
+  route = '39' AND
+  direction = 'Inbound' AND
+  servicedate='2015-2-23' AND
+CASE WHEN departure='NULL' AND arrival='NULL' THEN scheduled
+WHEN departure='NULL' THEN arrival
+ELSE scheduled
+END >= '1900-01-01 08:30:00.000' AND
+CASE WHEN departure='NULL' AND arrival='NULL' THEN scheduled
+WHEN departure='NULL' THEN arrival
+ELSE scheduled
+END  < '1900-01-01 09:00:00.000' 
+ORDER BY
+ route, direction, tripid, tpo
 LIMIT 100;

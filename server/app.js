@@ -86,15 +86,13 @@ app.get('/geo/:route/:dir/:sdate/:stime', function (req, res) {
 		geo_route.find({route:req.params.route, dir:req.params.dir}).limit(1).exec(function (err, docs) {
 			//console.log(docs)
 			geoobj=docs[0].georecs.features;
-			//console.log(geoobj[0].properties)
-			//res.json(docs);
-			//insertPbr(req.params.route);
-			getTpc(req.params.route, function(tpc){
+			var para = {route: req.params.route, sdate: req.params.sdate, stime: req.params.stime}
+			getTpc(para, function(tpc){
 				var starr = extractTimes(tpc);
 				consolSta(starr, function(stav){
 					var newgeo = processGeo(stav);
 					docs[0].georecs.features = newgeo;
-					console.log(docs[0].georecs.features)
+					//console.log(docs[0].georecs.features)
 					res.json(docs)
 				})
 			})
@@ -104,7 +102,7 @@ app.get('/geo/:route/:dir/:sdate/:stime', function (req, res) {
 });
 
 app.get('/routes', function (req, res) {
-	route.find({}, {route:1, dir: 1, headsign:1}).sort({route:1, dir:1}).exec(function (err, docs) {
+	route.find({dir:1}, {route:1, dir: 1, headsign:1}).sort({route:1, dir:1}).exec(function (err, docs) {
 		res.json(docs);
 	});
 });
@@ -143,12 +141,15 @@ var insertPbr = function(route){
 	});	
 }
 
-var getTpc = function(route, cb){
+var getTpc = function(p, cb){
 	var client = new pg.Client(conString);
 	var body = [];
 	client.connect();
+	var stt = p.stime;
+	var std = new Date('1900-01-01 '+stt+'.000')
+	var ent = fdate(new Date(std.getTime()+30*60000))
 	//var query = client.query("SELECT * FROM timepointcro LIMIT 10");
-	var query = client.query({text: "SELECT servicedate, tripid, route, direction, stop,  tpo, scheduled, arrival, departure FROM timepointcro WHERE route = $1 AND direction = 'Inbound' AND servicedate='2015-2-23' AND scheduled >= '1900-01-01 08:30:00.000' AND scheduled < '1900-01-01 09:00:00.000'  ORDER BY route, direction, tripid, tpo", values:[ route ]});
+	var query = client.query({text: "SELECT servicedate, tripid, route, direction, stop,  tpo, CASE  WHEN  departure='NULL' AND arrival='NULL' THEN scheduled WHEN departure='NULL' THEN arrival ELSE scheduled END as arrdep FROM timepointcro WHERE route = $1 AND direction = 'Inbound' AND servicedate=$2 AND CASE WHEN departure='NULL' AND arrival='NULL' THEN scheduled WHEN departure='NULL' THEN arrival  ELSE scheduled END >= $3 AND CASE WHEN departure='NULL' AND arrival='NULL' THEN scheduled WHEN departure='NULL' THEN arrival  ELSE scheduled END < $4 ORDER BY route, direction, tripid, tpo", values:[ p.route, p.sdate, stt, ent ]});
 	query.on('row', function(row) {
 		body.push(row)
 	});
@@ -180,8 +181,8 @@ var extractTimes= function(t){
 			if (t[i+1] && (t[i+1].tripid==t[i+1].tripid)){
 				var ob ={}
 				tost = t[i+1].stop;
-				var tot = new Date(t[i+1].scheduled);
-				var frt =  new Date(t[i].scheduled)
+				var tot = new Date(t[i+1].arrdep);
+				var frt =  new Date(t[i].arrdep)
 				dur = (tot - frt)/1000
 				ob.frstop=frst;
 				ob.tostop=tost;
@@ -250,15 +251,19 @@ var processGeo = function(d){
 				var cumdist  = geoobj[j].properties.distance;
 				do{
 					j++;
-					geoobj[j].properties.time = d[i].avg;
-					cumdist += geoobj[j].properties.distance;
-				}while (geoobj[j].properties.stop_id != d[i].tostop);
+					if(geoobj[j]){
+						geoobj[j].properties.time = d[i].avg;
+						cumdist += geoobj[j].properties.distance;						
+					}
+				}while (geoobj[j] &&(geoobj[j].properties.stop_id != d[i].tostop));
 				//console.log(cumdist)
 				lastj =j
 				//console.log(lastj)
 				for (var m = firstj; m<=lastj; m++){
-					geoobj[m].properties.cumdist = cumdist;
-					geoobj[m].properties.speed = Math.round(cumdist / d[i].avg * 2.23694);
+					if (geoobj[m]){
+						geoobj[m].properties.cumdist = cumdist;
+						geoobj[m].properties.speed = Math.round(cumdist / d[i].avg * 2.23694);
+					}
 				};
 				j=lastj;
 			}
@@ -271,4 +276,22 @@ var processGeo = function(d){
 
 return geoobj;
 //geoobjNew = JSON.parse(geoStr);
+}
+
+function fdate(d){
+        function pad(number) {
+            var r = String(number);
+            if (r.length === 1) {
+                r = '0' + r;
+            }
+            return r;
+        }    
+        return '1900'
+            + '-' + pad(d.getMonth() +1)
+            + '-' + pad(d.getDate())
+            + ' ' + pad(d.getHours())
+            + ':' + pad(d.getMinutes())
+            + ':' + pad(d.getSeconds())
+            + '.' + String((d.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5);
+
 }
