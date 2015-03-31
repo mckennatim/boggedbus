@@ -30,9 +30,35 @@ Building the data model was donewith the Potgresql relational database. Once the
 The application is then driven by the timePointCrossing data. This collection of prior real-time data, gives us the time each bus on each route arrives and departs at 10 points along its route at every time of the day for the days in February and March that were included in the data. That dataset is queried  (Postgres) every time you press MapIt. Before the map is displayed the data on those ten stops per route is turned ito durations between stops that is averaged over all the buses running in a half hour window from the user selected time. The properties of the GeoJSON object for the route are then modified and then it is passed into the map along with styles that depend on the speed property of each stop to stop leg. 
 
 ### Bugs
-Rigth now something is wrong with the speed feature display for the inbound routes. So they won't showw up until it is taken care of.
+Rigth now something is wrong with the speed feature display for the inbound routes. So they won't show up until it is taken care of.
 
 ### Ways to extend this project
 Besides being able to analyze prior days and times, it would be useful to feed in the realime stream from the MBTA. The JSON produced from url queries like <realtime.mbta.com/developer/api/v2/predictionsbyroute?api_key=wX9NwuHnZU2ToO7GmGR9uw&route=39&format=json> is very similar to the hubhacks2 tmePointCrossing data; it has finer resolution with time data on every stop, not just 10 per route, but it often comes up empty when queried on some routes.
+
+### Installation
+
+Requires Postgresql, NodeJs and MongoDb. 
+Create a database named 'bus' on mongo and mbta on postgres with postgresql as user
+unzip the 
+   
+   cd /data
+   mongo> use bus
+   tar xvf dup.tar.gz
+   mongorestore dump
+
+   createdb mbta
+   psql  mbta < <fullpath>/timepointcro.sql
+
+from boggedbus/server directory run
+  
+   npm install
+   node app
+
+access the app
+
+     http://yoursite.com/yourdirectory/boggedbus/client   
+
+
+
 
 
