@@ -56,7 +56,7 @@ from boggedbus/server directory run
 
 access the app
 
-     http://yoursite.com/yourdirectory/boggedbus/client   
+     http://yoursite.com/yourdirectory/boggedbus/client/index.html   
 
 
 
