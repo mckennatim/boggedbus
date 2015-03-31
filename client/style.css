@@ -180,7 +180,7 @@ body {
 }
 
 #map-outer {
-    height: 580px;
+    height: 530px;
     padding: 20px;
     border: 2px solid #CCC;
     margin-bottom: 20px;
@@ -200,7 +200,7 @@ body {
 }
 
 #map-container {
-    height: 530px
+    height: 480px
 }
 
 @media all and (max-width: 991px) {
