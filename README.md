@@ -41,18 +41,18 @@ Requires Postgresql, NodeJs and MongoDb.
 Create a database named 'bus' on mongo and mbta on postgres with postgresql as user
 unzip the 
    
-   cd /data
-   mongo> use bus
-   tar xvf dup.tar.gz
-   mongorestore dump
+    cd /data
+    mongo> use bus
+    tar xvf dup.tar.gz
+    mongorestore dump
 
-   createdb mbta
-   psql  mbta < <fullpath>/timepointcro.sql
+    createdb mbta
+    psql  mbta < <fullpath>/timepointcro.sql
 
 from boggedbus/server directory run
   
-   npm install
-   node app
+    npm install
+    node app
 
 access the app
 
