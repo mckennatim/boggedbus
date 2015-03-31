@@ -25,8 +25,14 @@ This project uses the Hubhacks2 data provided by the MBTA .
 ###Technologies
 GeoJSON, Postgresql, PostGis, NodeJS  Nginx , Javascript, AngularJS, MongoDB, mapsAP!3
 
-Building the data model was donewith the Potgresql relational database. Once transformations, queries and joins were accomplished, what was left was GeoJSON objects representing the the collection of segments between all stops and their propertie (such as distance between stops). They were assembled into a  feature collection for each route, those route JSON objects were then stored in a MongoDb. 
+Building the data model was donewith the Potgresql relational database. Once the static transformations, queries and joins were accomplished, what was left was GeoJSON objects representing the the collection of segments between all stops and their propertie (such as distance between stops). They were assembled into a  feature collection for each route, those route JSON objects were then stored in a MongoDb. 
 
 The application is then driven by the timePointCrossing data. This collection of prior real-time data, gives us the time each bus on each route arrives and departs at 10 points along its route at every time of the day for the days in February and March that were included in the data. That dataset is queried  (Postgres) every time you press MapIt. Before the map is displayed the data on those ten stops per route is turned ito durations between stops that is averaged over all the buses running in a half hour window from the user selected time. The properties of the GeoJSON object for the route are then modified and then it is passed into the map along with styles that depend on the speed property of each stop to stop leg. 
+
+### Bugs
+Rigth now something is wrong with the speed feature display for the inbound routes. So they won't showw up until it is taken care of.
+
+### Ways to extend this project
+Besides being able to analyze prior days and times, it would be useful to feed in the realime stream from the MBTA. The JSON produced from url queries like <realtime.mbta.com/developer/api/v2/predictionsbyroute?api_key=wX9NwuHnZU2ToO7GmGR9uw&route=39&format=json> is very similar to the hubhacks2 tmePointCrossing data; it has finer resolution with time data on every stop, not just 10 per route, but it often comes up empty when queried on some routes.
 
 
