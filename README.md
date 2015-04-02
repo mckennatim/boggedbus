@@ -38,7 +38,7 @@ You can make calls to the API that runs this app.
 
 The most interesting call returns a geoJSON object that you can plug right into a map. A call like this:
 
-    <http://sitebuilt.net:3009/geo/40/1>
+   <http://sitebuilt.net:3009/geo/40/1>
 
 where '40' is the bus route and '1' indicates 'inbound'  (0  indicates 'outbound').
 
