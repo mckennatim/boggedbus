@@ -64,7 +64,7 @@ and you get a route drawn on the map with a set of properties for the path betwe
 					"route": "40"
 				},
 
-Having date and time data like we got from timePointCrossings.csv and that you can get from realtime.mbta.com/developer/api/v2/predictionsbyroute would populate the properties time in seconds and speed in mph. In any event you can stle each section between stops using code like
+Having date and time data like we got from timePointCrossings.csv and that you can get from realtime.mbta.com/developer/api/v2/predictionsbyroute would populate the properties time in seconds and speed in mph. In any event you can style each section between stops using code like
 
 				map.data.setStyle(function(feature){
 					var speed =feature.getProperty('speed')
