@@ -28,7 +28,7 @@ GeoJSON, Postgresql, PostGis, NodeJS  Nginx , Javascript, AngularJS, MongoDB, ma
 
 Building the data model was donewith the Potgresql relational database acting on files published periodically by the MBTA in directory of csv files called MBTA_GTFS. Once the static transformations, queries and joins were accomplished, what was left was GeoJSON objects representing the the collection of segments between all stops and their properties (such as distance between stops). They were assembled into a  feature collection for each route, those route JSON objects were then stored in a MongoDb. 
 
-The application is then driven by the timePointCrossing data. This collection of prior real-time data, gives us the time each bus on each route arrives and departs at 10 points along its route at every time of the day for the days in February and March that were included in the data. That dataset is queried  (Postgres) every time you press MapIt. Before the map is displayed the data on those ten stops per route is turned ito durations between stops that is averaged over all the buses running in a half hour window from the user selected time. The properties of the GeoJSON object for the route are then modified and then it is passed into the map along with styles that depend on the speed property of each stop to stop leg. 
+The application is then driven by the timePointCrossing data. This collection of prior real-time data, gives us the time each bus on each route arrives and departs at 10 points along its route at every time of the day for the days in February and March that were included in the data. That dataset is queried  (Postgres) every time you press MapIt. Before the map is displayed the data on those ten stops per route is turned ito durations between stops that is averaged over all the buses running in a half hour window from the user selected time. The properties of the GeoJSON object for the route are then modified and then it is passed into the map along with styles that depend on the speed property of each stop to stop leg. The duration between stops is based on realtime data whenever it is available and scheduled data when it is not. (That's why those MBTA apps are sometimes not actually realtime)
 
 ### Bugs
 Right now something is wrong with the speed feature display for the inbound routes. So they won't show up until it is taken care of.
@@ -91,7 +91,7 @@ Having date and time data like we got from timePointCrossings.csv and that you c
 					"color":"purple", ...
 
 ### Ways to extend this project
-Besides being able to analyze prior days and times, it would be useful to feed in the realime stream from the MBTA. The JSON produced from url queries like <realtime.mbta.com/developer/api/v2/predictionsbyroute?api_key=wX9NwuHnZU2ToO7GmGR9uw&route=39&format=json> is very similar to the hubhacks2 tmePointCrossing data; it has finer resolution with time data on every stop, not just 10 per route, but, it often comes up empty when queried on some routes.
+Besides being able to analyze prior days and times, it would be useful to feed in the realime stream from the MBTA. The JSON produced from url queries like <realtime.mbta.com/developer/api/v2/predictionsbyroute?api_key=wX9NwuHnZU2ToO7GmGR9uw&route=39&format=json> is very similar to the hubhacks2 tmePointCrossing data; it has finer resolution with time data on every stop, not just 10 per route, but, it often comes up empty when queried on some routes. (That's another reason while those MBTA apps are sometimes not actually realtime)
 
 ### Installation
 
