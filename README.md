@@ -6,7 +6,7 @@ A graphical analytic tool for finding how fast the buses ar moving over differen
 ### Usage
 
 Select 
-* goto <http://boggedbuses.sitebuilt.net/boggedbus/client/index.html>
+* goto <http://boggedbuses.sitebuilt.net>
 * select bus route
 * choose date
 * select time slot
