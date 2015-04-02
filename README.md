@@ -1,8 +1,10 @@
 Bogged Down Buses
 ==========
 
-A graphical analytic tool for finding how fast the buses ar moving over different sections of their route.
-<img src="hubhacks_banner.jpg" width="300px">
+A graphical analytic tool for finding how fast the buses are moving over different sections of their route. This application was written as an entry in the HubHacks2 hackathon in March of 2015.
+
+<img src="hubhacks_banner.jpg" width="500px">
+<blockquote>HubHacks 2 is a data visualization challenge managed by the City of Boston. We're asking developers, designers, and data scientists to find new insights in urban data and show them in inviting, understandable, and thought-provoking ways. </blockquote>
 
 ### Usage
 
