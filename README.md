@@ -2,6 +2,7 @@ Bogged Down Buses
 ==========
 
 A graphical analytic tool for finding how fast the buses ar moving over different sections of their route.
+<img src="hubhacks_banner.jpg" width="300px">
 
 ### Usage
 
