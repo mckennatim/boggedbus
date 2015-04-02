@@ -21,7 +21,7 @@ While the mayors office does not run the MBTA, having a smoothly running transit
 * re-routing
 
 ### Datasets
-This project uses the Hubhacks2 data provided by the MBTA .
+This project uses the Hubhacks2 data provided by the MBTA and combines it with schedule and shape data and the google map API v3.0 .
 
 ###Technologies
 GeoJSON, Postgresql, PostGis, NodeJS  Nginx , Javascript, AngularJS, MongoDB, mapsAP!3
